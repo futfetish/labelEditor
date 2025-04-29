@@ -1,9 +1,9 @@
 <script lang="ts">
-  import viteLogo from '/vite.svg'
+  import CanvasEditor from "./components/canvasEditor.svelte";
 </script>
 
 <main>
- 123
+ <CanvasEditor />
 </main>
 
 <style>
