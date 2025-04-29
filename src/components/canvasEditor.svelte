@@ -17,8 +17,13 @@
   const mmToPx = (mm: number, dpi: number) => (mm * dpi) / 25.4;
   let transformerRef: Konva.Transformer;
   let selectedNode: Konva.Node | null = null;
+  let seletedTextElement: TextElement | null = null;
+  let seletedBarcodeElement: BarcodeElement | null = null;
+  let textInputRef: HTMLInputElement;
+  let ssccInputRef: HTMLInputElement;
 
   type BaseElement = {
+    id: string;
     type: "text" | "barcode";
     x: number;
     y: number;
@@ -32,12 +37,16 @@
   type TextElement = BaseElement & {
     type: "text";
     text: string;
+    fontSize: number;
+    centeredX: boolean;
+    centeredY: boolean;
   };
 
   type BarcodeElement = BaseElement & {
     type: "barcode";
     width: number;
     height: number;
+    sscc: string; // добавлено поле sscc
   };
 
   type Element = TextElement | BarcodeElement;
@@ -48,6 +57,7 @@
     elements.update((elems) => [
       ...elems,
       {
+        id: crypto.randomUUID(),
         type: "text",
         text: "Sample Text",
         x: 50,
@@ -57,6 +67,9 @@
         rotation: 0,
         draggable: true,
         ref: null,
+        fontSize: 24,
+        centeredX: false,
+        centeredY: false,
       },
     ]);
   };
@@ -65,6 +78,7 @@
     elements.update((elems) => [
       ...elems,
       {
+        id: crypto.randomUUID(),
         type: "barcode",
         x: 100,
         y: 100,
@@ -73,6 +87,7 @@
         rotation: 0,
         draggable: true,
         ref: null,
+        sscc: "123",
       },
     ]);
   };
@@ -84,14 +99,21 @@
     if (target.parent === null) {
       selectedNode = null;
       transformerRef.nodes([]);
+      setSelectedTextElement(null);
+      setSelectedBarcodeElement(null); // сбрасываем выбранный баркод
       return;
     }
 
     // клик по transformer — игнорируем
     if (target.getParent()?.className === "Transformer") return;
-
     selectedNode = target;
     transformerRef.nodes([target]);
+
+    if (target instanceof Konva.Text) {
+      setSelectedBarcodeElement(null); // сбрасываем выбранный баркод
+    } else if (target instanceof Konva.Rect) {
+      setSelectedTextElement(null); // сбрасываем выбранный текст
+    }
   }
 
   function onDragend(e: KonvaDragTransformEvent, el: Element) {
@@ -105,44 +127,16 @@
     const node = e.detail.target as Konva.Rect;
     const scaleX = node.scaleX();
     const scaleY = node.scaleY();
-    switch (el.type) {
-      case "barcode":
-        node.scaleX(1);
-        node.scaleY(1);
+    node.scaleX(1);
+    node.scaleY(1);
 
-        el.x = node.x();
-        el.y = node.y();
-        el.width = node.width() * scaleX;
-        el.height = node.height() * scaleY;
-        el.rotation = node.rotation();
+    el.x = node.x();
+    el.y = node.y();
+    el.width = node.width() * scaleX;
+    el.height = node.height() * scaleY;
+    el.rotation = node.rotation();
 
-        elements.update((arr) => [...arr]);
-        console.log($elements);
-        break;
-      //   case "text":
-      //     el.x = node.x();
-      //     el.y = node.y();
-      //     el.width = node.width() * scaleX;
-      //     el.height = node.height() * scaleY;
-      //     el.rotation = node.rotation();
-
-      //     elements.update((arr) => [...arr]);
-      //     console.log($elements);
-      //     break;
-      default:
-        node.scaleX(1);
-        node.scaleY(1);
-
-        el.x = node.x();
-        el.y = node.y();
-        el.width = node.width() * scaleX;
-        el.height = node.height() * scaleY;
-        el.rotation = node.rotation();
-
-        elements.update((arr) => [...arr]);
-        console.log($elements);
-        break;
-    }
+    elements.update((arr) => [...arr]);
   }
 
   function onTransform(e: KonvaDragTransformEvent) {
@@ -156,91 +150,252 @@
       });
     }
   }
+
+  function setText(text: string) {
+    if (seletedTextElement === null) return;
+
+    elements.update((arr) =>
+      arr.map((el) => {
+        if (el.type === "text" && el.id === seletedTextElement!.id) {
+          return { ...el, text };
+        }
+        return el;
+      })
+    );
+  }
+
+  function setFontSize(n: number) {
+    if (seletedTextElement === null) return;
+
+    elements.update((arr) =>
+      arr.map((el) => {
+        if (el.type === "text" && el.id === seletedTextElement!.id) {
+          return { ...el, fontSize: n };
+        }
+        return el;
+      })
+    );
+  }
+
+  function setCenteredX(checked: boolean) {
+    if (seletedTextElement === null) return;
+    seletedTextElement.centeredX = checked;
+
+    elements.update((arr) =>
+      arr.map((el) => {
+        if (el.type === "text" && el.id === seletedTextElement!.id) {
+          return { ...el, centeredX: checked };
+        }
+        return el;
+      })
+    );
+  }
+
+  function setCenteredY(checked: boolean) {
+    if (seletedTextElement === null) return;
+    seletedTextElement.centeredY = checked;
+
+    elements.update((arr) =>
+      arr.map((el) => {
+        if (el.type === "text" && el.id === seletedTextElement!.id) {
+          return { ...el, centeredY: checked };
+        }
+        return el;
+      })
+    );
+  }
+
+  async function setSelectedTextElement(el: TextElement | null) {
+    seletedTextElement = el;
+    if (el) {
+      requestAnimationFrame(() => {
+        textInputRef.focus();
+      });
+    }
+  }
+
+  async function setSelectedBarcodeElement(el: BarcodeElement | null) {
+    seletedBarcodeElement = el;
+    if (el) {
+      requestAnimationFrame(() => {
+        ssccInputRef.focus();
+      });
+    }
+  }
+
+  function setSscc(sscc: string) {
+    if (seletedBarcodeElement === null) return;
+
+    elements.update((arr) =>
+      arr.map((el) => {
+        if (el.type === "barcode" && el.id === seletedBarcodeElement!.id) {
+          return { ...el, sscc };
+        }
+        return el;
+      })
+    );
+  }
 </script>
 
-<div class="toolbar">
-  <button on:click={addText}>Добавить текст</button>
-  <button on:click={addBarcode}>Добавить баркод</button>
-</div>
-
 <div class="container">
-  <Stage
-    config={{
-      width: mmToPx(widthMM, dpi),
-      height: mmToPx(heightMM, dpi),
-    }}
-    on:mousedown={handleStageMouseDown}
-    on:touchstart={handleStageMouseDown}
-  >
-    <Layer>
-      {#each $elements as el, i (i)}
-        {#if el.type === "text"}
-          <Text
-            bind:this={el.ref}
-            config={{
-              text: el.text,
-              x: el.x,
-              y: el.y,
-              width: el.width,
-              height: el.height,
-              draggable: el.draggable,
-              wrap: "word",
-            }}
-            on:dragend={(e) => {
-              onDragend(e, el);
-            }}
-            on:transformend={(e) => {
-              onTransformend(e, el);
-            }}
-            on:transform={(e) => {
-              onTransform(e);
-            }}
-          />
-        {:else if el.type === "barcode"}
-          <Rect
-            bind:this={el.ref}
-            config={{
-              x: el.x,
-              y: el.y,
-              width: el.width,
-              height: el.height,
-              fill: "#eee",
-              stroke: "black",
-              strokeWidth: 1,
-              draggable: el.draggable,
-            }}
-            on:dragend={(e) => {
-              onDragend(e, el);
-            }}
-            on:transformend={(e) => {
-              onTransformend(e, el);
-            }}
-            on:transform={(e) => {
-              onTransform(e);
-            }}
-            on:transform
-          />
-          <Text
-            config={{
-              text: "aggregation_barcode",
-              x: el.x,
-              y: el.y,
-              rotation: el.rotation,
-              align: "center",
-              verticalAlign: "middle",
-              fontSize: 14,
-              fill: "black",
-              width: el.width,
-              height: el.height,
+  <div>
+    <div class="toolbar">
+      <button on:click={addText}>Добавить текст</button>
+      <button on:click={addBarcode}>Добавить баркод</button>
+    </div>
 
-              listening: false,
-            }}
-          />
-        {/if}
-      {/each}
-      <Transformer bind:handle={transformerRef} />
-    </Layer>
-  </Stage>
+    <div class="logElements" on:click={() => logElements()}>log elements</div>
+
+    <div>
+        <h3>Параметры холста</h3>
+        <div>
+          <label>ширина (мм):</label>
+          <input type="number" bind:value={widthMM} />
+        </div>
+        <div>
+          <label>высота (мм):</label>
+          <input type="number" bind:value={heightMM} />
+        </div>
+        <div>
+          <label>dpi:</label>
+          <input type="number" bind:value={dpi} />
+        </div>
+      </div>
+
+    <div
+      style="
+    visibility: {seletedTextElement ? 'visible' : 'hidden'};
+    width: {seletedTextElement ? 'auto' : '0px'};
+    height: {seletedTextElement ? 'auto' : '0px'};
+    overflow: hidden;
+  "
+    >
+      <h3>text settings</h3>
+      <div>
+        <label>text:</label>
+        <input
+          on:input={(e) => setText(e.currentTarget.value)}
+          bind:this={textInputRef}
+          value={seletedTextElement?.text}
+        />
+      </div>
+      <div>
+        <label> font size:</label>
+        <input
+          on:input={(e) => setFontSize(parseInt(e.currentTarget.value))}
+          type="number"
+          class="fontSizeInput"
+          value={seletedTextElement?.fontSize}
+        />
+      </div>
+      <div>
+        <label>Center X:</label>
+        <input
+          type="checkbox"
+          checked={seletedTextElement?.centeredX}
+          on:change={(e) => setCenteredX(e.currentTarget.checked)}
+        />
+      </div>
+      <div>
+        <label>Center Y:</label>
+        <input
+          type="checkbox"
+          checked={seletedTextElement?.centeredY}
+          on:change={(e) => setCenteredY(e.currentTarget.checked)}
+        />
+      </div>
+    </div>
+
+    <div
+      style="
+    visibility: {seletedBarcodeElement ? 'visible' : 'hidden'};
+    width: {seletedBarcodeElement ? 'auto' : '0px'};
+    height: {seletedBarcodeElement ? 'auto' : '0px'};
+    overflow: hidden;
+  "
+    >
+      <h3>barcode settings</h3>
+      <div>
+        <label>SSCC:</label>
+        <input
+          bind:this={ssccInputRef}
+          on:input={(e) => setSscc(e.currentTarget.value)}
+          value={seletedBarcodeElement?.sscc}
+        />
+      </div>
+    </div>
+  </div>
+
+  <div class="stageContainer">
+    <Stage
+      config={{
+        width: mmToPx(widthMM, dpi),
+        height: mmToPx(heightMM, dpi),
+      }}
+      on:mousedown={handleStageMouseDown}
+      on:touchstart={handleStageMouseDown}
+    >
+      <Layer>
+        {#each $elements as el, i (i)}
+          {#if el.type === "text"}
+            <Text
+              bind:this={el.ref}
+              on:mousedown={() => setSelectedTextElement(el)}
+              config={{
+                text: el.text,
+                x: el.x,
+                y: el.y,
+                width: el.width,
+                height: el.height,
+                draggable: el.draggable,
+                wrap: "word",
+                fontSize: el.fontSize,
+                align: el.centeredX ? "center" : "left",
+                verticalAlign: el.centeredY ? "middle" : "top",
+              }}
+              on:dragend={(e) => onDragend(e, el)}
+              on:transformend={(e) => onTransformend(e, el)}
+              on:transform={(e) => onTransform(e)}
+            />
+          {:else if el.type === "barcode"}
+            <Rect
+              bind:this={el.ref}
+              on:mousedown={() => setSelectedBarcodeElement(el)}
+              config={{
+                x: el.x,
+                y: el.y,
+                width: el.width,
+                height: el.height,
+                fill: "#eee",
+                stroke: "black",
+                strokeWidth: 1,
+                draggable: el.draggable,
+              }}
+              on:dragend={(e) => onDragend(e, el)}
+              on:transformend={(e) => onTransformend(e, el)}
+              on:transform={(e) => onTransform(e)}
+            />
+            <Text
+              config={{
+                text: `aggregation barcode: ${el.sscc}`,
+                x: el.x,
+                y: el.y,
+                rotation: el.rotation,
+                align: "center",
+                verticalAlign: "middle",
+                fontSize: 14,
+                fill: "black",
+                width: el.width,
+                height: el.height,
+                listening: false,
+              }}
+            />
+          {/if}
+        {/each}
+        <Transformer bind:handle={transformerRef} />
+      </Layer>
+    </Stage>
+  </div>
 </div>
 
 <style>
@@ -253,7 +408,19 @@
   }
 
   .container {
+    display: flex;
+  }
+
+  .stageContainer {
     background-color: white;
     display: inline-block;
+  }
+
+  .fontSizeInput {
+    width: 50px;
+  }
+
+  .logElements {
+    cursor: pointer;
   }
 </style>
