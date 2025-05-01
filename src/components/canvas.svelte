@@ -16,6 +16,18 @@
   let selectedNode: Konva.Node | null = null;
   let transformerRef: Konva.Transformer;
 
+  $: {
+    if ($selectedObject) {
+      const stage = transformerRef.getStage();
+      const selected = stage?.findOne("." + $selectedObject.id);
+      if (selected) {
+        transformerRef?.nodes([selected]);
+      } else {
+        transformerRef?.nodes([]);
+      }
+    }
+  }
+
   function handleStageMouseDown(e: any) {
     const target = e.detail.target;
 
@@ -98,6 +110,7 @@
             bind:this={obj.ref}
             on:mousedown={() => onClickObject(obj)}
             config={{
+              name: obj.id,
               text: obj.text,
               x: obj.x,
               y: obj.y,
@@ -119,6 +132,7 @@
             bind:this={obj.ref}
             on:mousedown={() => onClickObject(obj)}
             config={{
+              name: obj.id,
               x: obj.x,
               y: obj.y,
               width: obj.width,
