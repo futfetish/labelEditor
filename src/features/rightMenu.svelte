@@ -1,0 +1,22 @@
+<script>
+  import LabelSettings from "../components/labelSettings.svelte";
+
+  import ObjectSettings from "../components/objectSettings.svelte";
+</script>
+
+<div class="right">
+  <div class="filled label-settings">
+    <LabelSettings />
+  </div>
+  <div class="filled object-settings">
+    <ObjectSettings />
+  </div>
+</div>
+
+<style>
+  .filled {
+    z-index: 2;
+    padding: 4px;
+    background-color: gray;
+  }
+</style>

@@ -15,6 +15,10 @@
   {#if $selectedObject}
     <h3>object settings ({$selectedObject.type})</h3>
 
+    <!-- <div>
+      <p>id: {$selectedObject.id}</p>
+    </div> -->
+
     <div>
       <label>x:</label>
       <input
@@ -61,7 +65,7 @@
         on:input={(e) => setRotation(Number(e.currentTarget.value))}
       />
     </div>
-    
+
     <TextSettings />
     <BarcodeSettings />
   {/if}

@@ -1,30 +1,25 @@
 <script lang="ts">
-  import AddObjects from "./components/addObjects.svelte";
-  import BarcodeSettings from "./components/barcodeSettings.svelte";
   import Canvas from "./components/canvas.svelte";
-  import LabelSettings from "./components/labelSettings.svelte";
-  import TextSettings from "./components/textSettings.svelte";
-  import { objects } from "./store/objects";
+  import LeftMenu from "./features/leftMenu.svelte";
+  import RightMenu from "./features/rightMenu.svelte";
 </script>
 
-<main class="main" >
+<main class="main">
   <div class="container">
-    <div class="fixed" >
-      <button on:click={() => console.log($objects)}> log</button>
-      <AddObjects />
-      <LabelSettings />
-      <TextSettings />
-      <BarcodeSettings />
+    <div class="fixed">
+      <LeftMenu />
+      <RightMenu />
+
+      <!-- <button on:click={() => console.log($objects)}> log</button> -->
     </div>
-    <div class="canvas-container" >
-        <Canvas />
+    <div class="canvas-container">
+      <Canvas />
     </div>
-  
   </div>
 </main>
 
 <style>
-  .main{
+  .main {
     width: 100%;
     height: 100%;
   }
@@ -34,13 +29,24 @@
     position: relative;
   }
 
-  .fixed{
-    background-color: gray;
+  .fixed {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    height: 100%;
     position: fixed;
-    z-index: 2;
   }
 
-  .canvas-container{
+  .filled {
+    z-index: 2;
+    padding: 4px;
+    background-color: gray;
+  }
+
+  .label-settings {
+  }
+
+  .canvas-container {
     width: 100%;
     height: 100%;
     display: flex;
