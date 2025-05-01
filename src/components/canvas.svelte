@@ -35,8 +35,13 @@
 
   function onDragend(e: KonvaDragTransformEvent, obj: Element) {
     const node = e.detail.target;
-    obj.x = node.x();
-    obj.y = node.y();
+    obj.x = parseFloat(node.x().toFixed(5));
+    obj.y = parseFloat(node.y().toFixed(5));
+
+    if ($selectedObject && obj.id === $selectedObject.id) {
+      selectedObject.set(obj);
+    }
+
     objects.update((arr) => [...arr]);
   }
 
@@ -47,14 +52,14 @@
     node.scaleX(1);
     node.scaleY(1);
 
-    obj.x = node.x();
-    obj.y = node.y();
-    obj.width = node.width() * scaleX;
-    obj.height = node.height() * scaleY;
-    obj.rotation = node.rotation();
+    obj.x = parseFloat(node.x().toFixed(5));
+    obj.y = parseFloat(node.y().toFixed(5));
+    obj.width = parseFloat((node.width() * scaleX).toFixed(5));
+    obj.height = parseFloat((node.height() * scaleY).toFixed(5));
+    obj.rotation = parseFloat(node.rotation().toFixed(5));
 
-    if( $selectedObject && obj.id === $selectedObject.id){
-        selectedObject.set(obj)
+    if ($selectedObject && obj.id === $selectedObject.id) {
+      selectedObject.set(obj);
     }
 
     objects.update((arr) => [...arr]);

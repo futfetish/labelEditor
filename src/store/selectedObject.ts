@@ -93,13 +93,11 @@ export function setRotation(rotation: number) {
   const selected = get(selectedObject);
   if (!selected) return;
 
-  selected.rotation = rotation;
+  selected.rotation = parseFloat(rotation.toFixed(5));
   selectedObject.set(selected);
 
   objects.update((arr) =>
-    arr.map((el) =>
-      el.id === selected.id ? selected : el
-    )
+    arr.map((el) => (el.id === selected.id ? selected : el))
   );
 }
 
@@ -107,7 +105,7 @@ export function setWidth(width: number) {
   const selected = get(selectedObject);
   if (!selected) return;
 
-  selected.width = width;
+  selected.width = parseFloat(width.toFixed(5));
   selectedObject.set(selected);
 
   objects.update((arr) =>
@@ -119,7 +117,31 @@ export function setHeight(height: number) {
   const selected = get(selectedObject);
   if (!selected) return;
 
-  selected.height = height;
+  selected.height = parseFloat(height.toFixed(5));
+  selectedObject.set(selected);
+
+  objects.update((arr) =>
+    arr.map((el) => (el.id === selected.id ? selected : el))
+  );
+}
+
+export function setX(x: number) {
+  const selected = get(selectedObject);
+  if (!selected) return;
+
+  selected.x = parseFloat(x.toFixed(5));
+  selectedObject.set(selected);
+
+  objects.update((arr) =>
+    arr.map((el) => (el.id === selected.id ? selected : el))
+  );
+}
+
+export function setY(y: number) {
+  const selected = get(selectedObject);
+  if (!selected) return;
+
+  selected.y = parseFloat(y.toFixed(5));
   selectedObject.set(selected);
 
   objects.update((arr) =>
