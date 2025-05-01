@@ -22,7 +22,7 @@
   }
 
   .active{
-    background-color: aliceblue;
+    background-color: lightblue !important;
   }
 
   .button:hover {
