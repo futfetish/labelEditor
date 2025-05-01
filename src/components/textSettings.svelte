@@ -1,5 +1,6 @@
 <script lang="ts">
   import {
+  isNewSelectedObject,
     selectedObject,
     setCenteredX,
     setCenteredY,
@@ -10,7 +11,7 @@
   let textInputRef: HTMLInputElement;
 
   // Следим за изменениями в selectedObject, и если тип объекта "text", ставим фокус на инпут
-  $: if ($selectedObject?.type === "text") {
+  $: if ($selectedObject?.type === "text"  && $isNewSelectedObject) {
     requestAnimationFrame(() => {
       textInputRef?.focus();
     });

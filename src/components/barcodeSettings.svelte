@@ -1,10 +1,10 @@
 <script lang="ts">
-  import { selectedObject, setSscc } from "../store/selectedObject";
+  import { isNewSelectedObject, selectedObject, setSscc } from "../store/selectedObject";
 
   let ssccInputRef: HTMLInputElement;
 
   // реактивная проверка и установка фокуса
-  $: if ($selectedObject?.type === "barcode") {
+  $: if ($selectedObject?.type === "barcode" && $isNewSelectedObject) {
     requestAnimationFrame(() => {
       ssccInputRef?.focus();
     });

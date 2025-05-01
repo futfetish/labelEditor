@@ -53,6 +53,10 @@
     obj.height = node.height() * scaleY;
     obj.rotation = node.rotation();
 
+    if( $selectedObject && obj.id === $selectedObject.id){
+        selectedObject.set(obj)
+    }
+
     objects.update((arr) => [...arr]);
   }
 
@@ -99,6 +103,7 @@
               fontSize: obj.fontSize,
               align: obj.centeredX ? "center" : "left",
               verticalAlign: obj.centeredY ? "middle" : "top",
+              rotation: obj.rotation,
             }}
             on:dragend={(e) => onDragend(e, obj)}
             on:transformend={(e) => onTransformend(e, obj)}
