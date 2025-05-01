@@ -1,0 +1,1 @@
+export const mmToPx = (mm: number, dpi: number) => (mm * dpi) / 25.4;
