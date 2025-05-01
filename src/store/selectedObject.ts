@@ -102,3 +102,27 @@ export function setRotation(rotation: number) {
     )
   );
 }
+
+export function setWidth(width: number) {
+  const selected = get(selectedObject);
+  if (!selected) return;
+
+  selected.width = width;
+  selectedObject.set(selected);
+
+  objects.update((arr) =>
+    arr.map((el) => (el.id === selected.id ? selected : el))
+  );
+}
+
+export function setHeight(height: number) {
+  const selected = get(selectedObject);
+  if (!selected) return;
+
+  selected.height = height;
+  selectedObject.set(selected);
+
+  objects.update((arr) =>
+    arr.map((el) => (el.id === selected.id ? selected : el))
+  );
+}

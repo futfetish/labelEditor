@@ -26,7 +26,6 @@
       overflow: hidden;
     "
 >
-  <h3>text settings</h3>
   <div>
     <label>text:</label>
     <input

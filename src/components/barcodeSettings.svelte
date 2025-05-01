@@ -19,7 +19,6 @@
     overflow: hidden;
   "
 >
-  <h3>barcode settings</h3>
   <div>
     <label>SSCC:</label>
     <input
