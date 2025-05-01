@@ -7,7 +7,6 @@
 </script>
 
 <div class="right">
-    <button on:click={() => console.log($objects[0].ref)}> log </button>
   <div class="filled label-settings">
     <LabelSettings />
   </div>

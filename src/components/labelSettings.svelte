@@ -4,13 +4,13 @@
 
 </script>
 <div>
-  <h3>Параметры холста</h3>
+  <h3>label settings</h3>
   <div>
-    <label>ширина (мм):</label>
+    <label>width (mm):</label>
     <input type="number" bind:value={$widthMM} />
   </div>
   <div>
-    <label>высота (мм):</label>
+    <label>height (mm):</label>
     <input type="number" bind:value={$heightMM} />
   </div>
   <div>
