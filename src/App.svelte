@@ -9,8 +9,6 @@
     <div class="fixed">
       <LeftMenu />
       <RightMenu />
-
-      <!-- <button on:click={() => console.log($objects)}> log</button> -->
     </div>
     <div class="canvas-container">
       <Canvas />
@@ -35,15 +33,6 @@
     width: 100%;
     height: 100%;
     position: fixed;
-  }
-
-  .filled {
-    z-index: 2;
-    padding: 4px;
-    background-color: gray;
-  }
-
-  .label-settings {
   }
 
   .canvas-container {
